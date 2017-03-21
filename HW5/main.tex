@@ -1,0 +1,418 @@
+\documentclass[12pt]{article}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\textwidth}{6.5in}
+\setlength{\parindent}{0in}
+\setlength{\parskip}{\baselineskip}
+
+\usepackage[letterpaper, portrait, margin=1in]{geometry}
+\usepackage[usenames, dvipsnames, rgb]{xcolor}
+\usepackage{amsmath,amsfonts,amssymb,circuitikz,pdfpages,tikz}
+
+\usetikzlibrary{matrix,calc,circuits.logic.US}
+\tikzstyle{branch}=[fill, shape=circle, minimum size=3pt, inner sep=0pt]
+
+%isolated term
+%#1 - Optional. Space between node and grouping line. Default=0
+%#2 - node
+%#3 - filling color
+\newcommand{\implicantsol}[3][0]{
+    \draw[rounded corners=3pt, fill=#3, opacity=0.3] ($(#2.north west)+(135:#1)$) rectangle ($(#2.south east)+(-45:#1)$);
+    }
+
+
+%internal group
+%#1 - Optional. Space between node and grouping line. Default=0
+%#2 - top left node
+%#3 - bottom right node
+%#4 - filling color
+\newcommand{\implicant}[4][0]{
+    \draw[rounded corners=3pt, fill=#4, opacity=0.3] ($(#2.north west)+(135:#1)$) rectangle ($(#3.south east)+(-45:#1)$);
+    }
+
+%group lateral borders
+%#1 - Optional. Space between node and grouping line. Default=0
+%#2 - top left node
+%#3 - bottom right node
+%#4 - filling color
+\newcommand{\implicantcostats}[4][0]{
+    \draw[rounded corners=3pt, fill=#4, opacity=0.3] ($(rf.east |- #2.north)+(90:#1)$)-| ($(#2.east)+(0:#1)$) |- ($(rf.east |- #3.south)+(-90:#1)$);
+    \draw[rounded corners=3pt, fill=#4, opacity=0.3] ($(cf.west |- #2.north)+(90:#1)$) -| ($(#3.west)+(180:#1)$) |- ($(cf.west |- #3.south)+(-90:#1)$);
+}
+
+%group top-bottom borders
+%#1 - Optional. Space between node and grouping line. Default=0
+%#2 - top left node
+%#3 - bottom right node
+%#4 - filling color
+\newcommand{\implicantdaltbaix}[4][0]{
+    \draw[rounded corners=3pt, fill=#4, opacity=0.3] ($(cf.south -| #2.west)+(180:#1)$) |- ($(#2.south)+(-90:#1)$) -| ($(cf.south -| #3.east)+(0:#1)$);
+    \draw[rounded corners=3pt, fill=#4, opacity=0.3] ($(rf.north -| #2.west)+(180:#1)$) |- ($(#3.north)+(90:#1)$) -| ($(rf.north -| #3.east)+(0:#1)$);
+}
+
+%group corners
+%#1 - Optional. Space between node and grouping line. Default=0
+%#2 - filling color
+\newcommand{\implicantcantons}[2][0]{
+    \draw[rounded corners=3pt, opacity=.3] ($(rf.east |- 0.south)+(-90:#1)$) -| ($(0.east |- cf.south)+(0:#1)$);
+    \draw[rounded corners=3pt, opacity=.3] ($(rf.east |- 8.north)+(90:#1)$) -| ($(8.east |- rf.north)+(0:#1)$);
+    \draw[rounded corners=3pt, opacity=.3] ($(cf.west |- 2.south)+(-90:#1)$) -| ($(2.west |- cf.south)+(180:#1)$);
+    \draw[rounded corners=3pt, opacity=.3] ($(cf.west |- 10.north)+(90:#1)$) -| ($(10.west |- rf.north)+(180:#1)$);
+    \fill[rounded corners=3pt, fill=#2, opacity=.3] ($(rf.east |- 0.south)+(-90:#1)$) -|  ($(0.east |- cf.south)+(0:#1)$) [sharp corners] ($(rf.east |- 0.south)+(-90:#1)$) |-  ($(0.east |- cf.south)+(0:#1)$) ;
+    \fill[rounded corners=3pt, fill=#2, opacity=.3] ($(rf.east |- 8.north)+(90:#1)$) -| ($(8.east |- rf.north)+(0:#1)$) [sharp corners] ($(rf.east |- 8.north)+(90:#1)$) |- ($(8.east |- rf.north)+(0:#1)$) ;
+    \fill[rounded corners=3pt, fill=#2, opacity=.3] ($(cf.west |- 2.south)+(-90:#1)$) -| ($(2.west |- cf.south)+(180:#1)$) [sharp corners]($(cf.west |- 2.south)+(-90:#1)$) |- ($(2.west |- cf.south)+(180:#1)$) ;
+    \fill[rounded corners=3pt, fill=#2, opacity=.3] ($(cf.west |- 10.north)+(90:#1)$) -| ($(10.west |- rf.north)+(180:#1)$) [sharp corners] ($(cf.west |- 10.north)+(90:#1)$) |- ($(10.west |- rf.north)+(180:#1)$) ;
+}
+
+%Empty Karnaugh map 4x4
+\newenvironment{Karnaugh}%
+{
+\begin{tikzpicture}[baseline=(current bounding box.north),scale=0.8]
+\draw (0,0) grid (4,4);
+\draw (0,4) -- node [pos=1,above right,anchor=south west] {$x_3x_4$} node [pos=0.7,below left,anchor=north east] {$x_1x_2$} ++(135:1);
+%
+\matrix (mapa) [matrix of nodes,
+        column sep={0.8cm,between origins},
+        row sep={0.8cm,between origins},
+        every node/.style={minimum size=0.3mm},
+        anchor=8.center,
+        ampersand replacement=\&] at (0.5,0.5)
+{
+                       \& |(c00)| 00         \& |(c01)| 01         \& |(c11)| 11         \& |(c10)| 10         \& |(cf)| \phantom{00} \\
+|(r00)| 00             \& |(0)|  \phantom{0} \& |(1)|  \phantom{0} \& |(3)|  \phantom{0} \& |(2)|  \phantom{0} \&                     \\
+|(r01)| 01             \& |(4)|  \phantom{0} \& |(5)|  \phantom{0} \& |(7)|  \phantom{0} \& |(6)|  \phantom{0} \&                     \\
+|(r11)| 11             \& |(12)| \phantom{0} \& |(13)| \phantom{0} \& |(15)| \phantom{0} \& |(14)| \phantom{0} \&                     \\
+|(r10)| 10             \& |(8)|  \phantom{0} \& |(9)|  \phantom{0} \& |(11)| \phantom{0} \& |(10)| \phantom{0} \&                     \\
+|(rf) | \phantom{00}   \&                    \&                    \&                    \&                    \&                     \\
+};
+}%
+{
+\end{tikzpicture}
+}
+
+%Empty Karnaugh map 4x4
+\newenvironment{Karnaugh5}%
+{
+\begin{tikzpicture}[baseline=(current bounding box.north),scale=0.8]
+\draw (0,0) grid (4,4);
+\draw (0,4) -- node [pos=1,above right,anchor=south west] {$x_4x_5$} node [pos=0.7,below left,anchor=north east] {$x_2x_3$} ++(135:1);
+%
+\matrix (mapa) [matrix of nodes,
+        column sep={0.8cm,between origins},
+        row sep={0.8cm,between origins},
+        every node/.style={minimum size=0.3mm},
+        anchor=8.center,
+        ampersand replacement=\&] at (0.5,0.5)
+{
+                       \& |(c00)| 00         \& |(c01)| 01         \& |(c11)| 11         \& |(c10)| 10         \& |(cf)| \phantom{00} \\
+|(r00)| 00             \& |(0)|  \phantom{0} \& |(1)|  \phantom{0} \& |(3)|  \phantom{0} \& |(2)|  \phantom{0} \&                     \\
+|(r01)| 01             \& |(4)|  \phantom{0} \& |(5)|  \phantom{0} \& |(7)|  \phantom{0} \& |(6)|  \phantom{0} \&                     \\
+|(r11)| 11             \& |(12)| \phantom{0} \& |(13)| \phantom{0} \& |(15)| \phantom{0} \& |(14)| \phantom{0} \&                     \\
+|(r10)| 10             \& |(8)|  \phantom{0} \& |(9)|  \phantom{0} \& |(11)| \phantom{0} \& |(10)| \phantom{0} \&                     \\
+|(rf) | \phantom{00}   \&                    \&                    \&                    \&                    \&                     \\
+};
+}%
+{
+\end{tikzpicture}
+}
+
+%Empty Karnaugh map 2x4
+\newenvironment{Karnaughvuit}%
+{
+\begin{tikzpicture}[baseline=(current bounding box.north),scale=0.8]
+\draw (0,0) grid (4,2);
+\draw (0,2) -- node [pos=1,above right,anchor=south west] {$x_2x_3$} node [pos=0.7,below left,anchor=north east] {$x_1$} ++(135:1);
+%
+\matrix (mapa) [matrix of nodes,
+        column sep={0.8cm,between origins},
+        row sep={0.8cm,between origins},
+        every node/.style={minimum size=0.3mm},
+        anchor=4.center,
+        ampersand replacement=\&] at (0.5,0.5)
+{
+                      \& |(c00)| 00         \& |(c01)| 01         \& |(c11)| 11         \& |(c10)| 10         \& |(cf)| \phantom{00} \\
+|(r00)| 0             \& |(0)|  \phantom{0} \& |(1)|  \phantom{0} \& |(3)|  \phantom{0} \& |(2)|  \phantom{0} \&                     \\
+|(r01)| 1             \& |(4)|  \phantom{0} \& |(5)|  \phantom{0} \& |(7)|  \phantom{0} \& |(6)|  \phantom{0} \&                     \\
+|(rf) | \phantom{00}  \&                    \&                    \&                    \&                    \&                     \\
+};
+}%
+{
+\end{tikzpicture}
+}
+
+%Empty Karnaugh map 2x2
+\newenvironment{Karnaughquatre}%
+{
+\begin{tikzpicture}[baseline=(current bounding box.north),scale=0.8]
+\draw (0,0) grid (2,2);
+\draw (0,2) -- node [pos=0.7,above right,anchor=south west] {b} node [pos=0.7,below left,anchor=north east] {a} ++(135:1);
+%
+\matrix (mapa) [matrix of nodes,
+        column sep={0.8cm,between origins},
+        row sep={0.8cm,between origins},
+        every node/.style={minimum size=0.3mm},
+        anchor=2.center,
+        ampersand replacement=\&] at (0.5,0.5)
+{
+          \& |(c00)| 0          \& |(c01)| 1  \\
+|(r00)| 0 \& |(0)|  \phantom{0} \& |(1)|  \phantom{0} \\
+|(r01)| 1 \& |(2)|  \phantom{0} \& |(3)|  \phantom{0} \\
+};
+}%
+{
+\end{tikzpicture}
+}
+
+%Defines 8 or 16 values (0,1,X)
+\newcommand{\contingut}[1]{%
+\foreach \x [count=\xi from 0]  in {#1}
+     \path (\xi) node {\x};
+}
+
+%Places 1 in listed positions
+\newcommand{\minterms}[1]{%
+    \foreach \x in {#1}
+        \path (\x) node {1};
+}
+
+%Places 0 in listed positions
+\newcommand{\maxterms}[1]{%
+    \foreach \x in {#1}
+        \path (\x) node {0};
+}
+
+\newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+
+\begin{document}
+\title{Digital Logic Homework 4}
+
+ECEN 2350 Spring 2017 \hfill Homework 4\\
+Samuel Cuthbertson
+
+\hrulefill
+
+\begin{enumerate}
+	\vspace{-4mm}
+	\item \textit{Book Problems: 3.2, 3.3, 3.5 and 3.5}
+	      \begin{enumerate}
+
+	      	\item[(3.2)] \textit{Determine the decimal values of the following decimal values of the following one's complement numbers.}
+	      	  \item \textit{0111011110} \\
+	      	      First, note the that given number is positive (MSB is 0) and thus it's value is simply given by the below formula:
+	      	      \begin{align*}
+	      	      	V(b) &= b_0 * 2^0 + b_1 * 2^1 ... b_i * 2^i \\
+                       &= 0*2^0 + 1*2^1 + 1*2^2 + 1*2^3 + 1*2^4 + 0*2^5 + 1*2^6 + 1*2^7 + 1*2^8 \\
+                       &= \boxed{478}
+	      	      \end{align*}
+
+	         \item \textit{1011100111} \\
+                Now, note that the value is negative (MSB is 1) and thus the magnitude will be given by examining it's complement (0100011000) with the formula mentioned in the previous problem.
+                \begin{align*}
+                  V(b) &= 0*2^0 + 0*2^1 + 0*2^2 + 1*2^3 + 1*2^4 + 0*2^5 + 0*2^6 + 0*2^7 + 1*2^8 \\
+                       &= 280
+                \end{align*}
+                Thus, our value is \boxed{-280}
+	      	  \item \textit{1111111110} \\
+                Again, note the the value is negative and that the magnitude is given by it's complement (0000000001).
+                \begin{align*}
+                  V(b) &= 1*2^0 \\
+                       &= 1
+                \end{align*}
+                Thus, our value is \boxed{-1}
+
+          \vspace{10mm}
+	      	\item[(3.3)] \textit{Determine the values of the following 2's complement numbers.} \\
+                First, recall the below equations for the value of 2's complements numbers.
+                \[
+                V(b) = b_0 * 2^0 + b_1 * 2^1 + ... + b_{i-1} * 2^{i-1} - b_i * 2^i
+                \]
+            \setcounter{enumii}{0}
+            \item \textit{0111011110}
+              \begin{align*}
+                V(b) &= 1*2^1 + 1*2^2 + 1*2^3 + 1*2^4 + 1*2^6 + 1*2^7 + 1*2^8 \\
+                V(b) &= \boxed{478}
+              \end{align*}
+            \item \textit{1011100111}
+              \begin{align*}
+                V(b) &= 1*2^0 + 1*2^1 + 1*2^2 + 1*2^5 + 1*2^6 + 1*2^7 - 1*2^9 \\
+                V(b) &= \boxed{-281}
+              \end{align*}
+
+            \item \textit{1111111110}
+              \begin{align*}
+                V(b) &= 1*2^1 + 1*2^2 + 1*2^3 + 1*2^4 + 1*2^5 + 1*2^6 + 1*2^7 + 1*2^8 - 1*2^9 \\
+                V(b) &= \boxed{-2}
+              \end{align*}
+
+          \vspace{10mm}
+          \item[(3.4)] \textit{Convert 73, 1906, -95 and -1630 into signed 12-bit numbers in the following representations.}
+            \setcounter{enumii}{0}
+            \item \textit{Sign and Magnitude}
+              \begin{align*}
+                73 = 64 + 8 + 1 &= \boxed{(000001001001)_2} \\
+                1906 = 1024 + 512 + 256 + 64 + 32 + 16 + 2 &= \boxed{(011101110010)_2} \\
+                \text{Note: \;} 95 = 64 + 16 + 8 + 4 + 2 + 1 = (000001011111)_2 \\
+                \implies -95 &= \boxed{(100001011111)_2} \\
+                \text{Note: \;} 1630 = 1024 + 512 + 64 + 16 + 8 + 4 + 2 = (01&1001011110)_2 &\\
+                \implies -1630 &= \boxed{(111001011110)_2}
+              \end{align*}
+            \item \textit{1's Complement} \\
+              Take the magnitudes from above, and for the negatives bitwise complement them.
+              \begin{align*}
+                73 &= \boxed{(000001001001)_2} \\
+                1906 &= \boxed{(011101110010)_2} \\
+                -95 &= \boxed{(111110100000)_2} \\
+                -1630 &= \boxed{(100110100001)_2}
+              \end{align*}
+            \item \textit{2's Complement} \\
+              Take the answers from immediately above, and for the negatives add one.
+              \begin{align*}
+                73 &= \boxed{(000001001001)_2} \\
+                1906 &= \boxed{(011101110010)_2} \\
+                -95 &= \boxed{(111110100001)_2} \\
+                -1630 &= \boxed{(100110100010)_2}
+              \end{align*}
+
+          \vspace{10mm}
+          \item[(3.5)] \textit{Perform the following operations using 8-bit 2's complement numbers and indicate whether arithmetic overflow occurs.}
+          \begin{center}
+            \begin{tabular}{c c c c c c c c c c}
+                \\
+                & 0 & 0 & 0 & 0 & 1 & 0 & 0 && Carry\\
+                & 0 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & x\\
+              + & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 1 & y\\
+                \hline
+                & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & x+y
+            \end{tabular}
+
+            No Arithmetic Overflow, $54 + 69 = 123$.
+
+            \begin{tabular}{c c c c c c c c c c}
+                \\
+              1 & 1 & 1 & 1 & 1 & 1 & 0 & 0 && Carry\\
+                & 0 & 1 & 1 & 1 & 0 & 1 & 0 & 1 & x\\
+              + & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & y\\
+                \hline
+                & 0 & 1 & 0 & 1 & 0 & 0 & 1 & 1 & x+y
+            \end{tabular}
+
+            No Arithmetic Overflow, $117 - 34 = 83$.
+
+            \begin{tabular}{c c c c c c c c c c}
+                \\
+              1 & 1 & 1 & 1 & 1 & 0 & 0 & 0 && Carry\\
+                & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 1 & x\\
+              + & 1 & 0 & 1 & 1 & 1 & 0 & 0 & 0 & y\\
+                \hline
+                & 1 & 0 & 0 & 1 & 0 & 1 & 1 & 1 & x+y
+            \end{tabular}
+
+            No Arithmetic Overflow, $-33-72 = -105$.
+
+            \begin{tabular}{c c c c c c c c c c}
+                \\
+              0 & 0 & 0 & 0 & 1 & 0 & 1 & 1 && Borrow\\
+                & 0 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & x\\
+              - & 0 & 0 & 1 & 0 & 1 & 0 & 1 & 1 & y\\
+                \hline
+                & 0 & 0 & 0 & 0 & 1 & 0 & 1 & 1 & x-y
+            \end{tabular}
+
+            No Arithmetic Overflow, $54-43 = 11$.
+
+            \begin{tabular}{c c c c c c c c c c}
+                \\
+              1 & 0 & 0 & 0 & 0 & 1 & 1 & 0 && Borrow\\
+                & 0 & 1 & 1 & 1 & 0 & 1 & 0 & 1 & x\\
+              - & 1 & 1 & 0 & 1 & 0 & 1 & 1 & 0 & y\\
+                \hline
+                & 1 & 0 & 1 & 0 & 1 & 1 & 1 & 1 & x-y
+            \end{tabular}
+
+            Arithmetic Overflow, $117--42 = 117 + 42 = 158 \neq -81$.
+
+            \begin{tabular}{c c c c c c c c c c}
+                \\
+              1 & 1 & 1 & 0 & 1 & 1 & 0 & 0 && Borrow\\
+                & 1 & 1 & 0 & 1 & 0 & 0 & 1 & 1 & x\\
+              - & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 0 & y\\
+                \hline
+                & 1 & 1 & 1 & 0 & 0 & 1 & 1 & 1 & x-y
+            \end{tabular}
+
+            No Arithmetic Overflow, $-45- -20 = -45 + 20 = -25$.
+          \end{center}
+	      \end{enumerate}
+
+        \newpage
+        \item \textit{Multiply the following numbers like in the manner shown in Figure 3.36 of the textbook.}
+        \begin{enumerate}
+          \item \textit{20*15} \\
+            Note: $20 = 16 + 4 = (010100)_2$ and $15 = 8 + 4 + 2 + 1 = (001111)_2$
+            \begin{center}
+              \begin{tabular}{c c c c c c c c c c c c | c}
+                &&&&&& 0 & 1 & 0 & 1 & 0 & 0 & $20$\\
+                &&&&&$\times$ & 0 & 0 & 1 & 1 & 1 & 1 & $15$\\
+                \hline
+                &&& 1 & 1 & 1 & 1 & &&&&& Carry \\
+                &&&&&& 0 & 1 & 0 & 1 & 0 & 0 & $P_0$ \\
+                &&&&& 0 & 1 & 0 & 1 & 0 & 0 && $P_1$ \\
+                &&&& 0 & 1 & 0 & 1 & 0 & 0 &&& $P_2$ \\
+                &&& 0 & 1 & 0 & 1 & 0 & 0 &&&& $P_3$ \\
+                && 0 & 0 & 0 & 0 & 0 & 0 &&&&& $P_4$ \\
+                + & 0 & 0 & 0 & 0 & 0 & 0 &&&&&& $P_5$ \\
+                \hline
+                & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 1 & 1 & 0 & 0 & $20*15$
+              \end{tabular}
+              \begin{align*}
+                20*15 &= 300 \\
+                (010100)_2 * (001111)_2 &= \boxed{(0100101100)_2}
+              \end{align*}
+            \end{center}
+
+          \item \textit{-7*10} \\
+            Note: $-7 = -8 + 1 = (11001)_2$ and $10 = 8 + 2 = (01010)_2$
+            \begin{center}
+              \begin{tabular}{c c c c c c c c c c c | c}
+                &&&&&& 1 & 1 & 0 & 0 & 1 & $-7$\\
+                &&&&&$\times$ & 0 & 1 & 0 & 1 & 0 & $10$\\
+                \hline
+                & 1 & 1 & 1 &&&&&&&& Carry \\
+                &&&&&& 0 & 0 & 0 & 0 & 0 & $P_0$ \\
+                & 1 & 1 & 1 & 1 & 1 & 1 & 0 & 0 & 1 && $P_1$ \\
+                &&&& 0 & 0 & 0 & 0 & 0 &&& $P_2$ \\
+                & 1 & 1 & 1 & 1 & 0 & 0 & 1 &&&& $P_3$ \\
+              + && 0 & 0 & 0 & 0 & 0 &&&&& $P_4$ \\
+                \hline
+                ... & 1 & 1 & 1 & 0 & 1 & 1 & 1 & 0 & 1 & 0 & $-7*10$
+              \end{tabular}
+              \begin{align*}
+                -7*10 &= -70 \\
+                (11001)_2 * (01010)_2 &= \boxed{(10111010)_2}
+              \end{align*}
+            \end{center}
+
+          \item \textit{-3*-12}\\
+            Note that $-3 * -12 = 3*12$, and $3 = (00011)_2$ while $12 = (01100)_2$
+            \begin{center}
+              \begin{tabular}{c c c c c c c c c c c | c}
+                &&&&&& 0 & 0 & 0 & 1 & 1 & $3$\\
+                &&&&&$\times$ & 0 & 1 & 1 & 0 & 0 & $12$\\
+                \hline
+                &&&&& 1 & 1 &&&&& Carry \\
+                &&&&&& 0 & 0 & 0 & 0 & 0 & $P_0$ \\
+                &&&&& 0 & 0 & 0 & 0 & 0 && $P_1$ \\
+                &&&& 0 & 0 & 0 & 1 & 1 &&& $P_2$ \\
+                &&& 0 & 0 & 0 & 1 & 1 &&&& $P_3$ \\
+              + && 0 & 0 & 0 & 0 & 0 &&&&& $P_4$ \\
+                \hline
+                && 0 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 0 & $3*12$
+              \end{tabular}
+              \begin{align*}
+                3*12 &= 36 \\
+                (00011)_2 * (01100)_2 &= \boxed{(0100100)_2}
+              \end{align*}
+            \end{center}
+        \end{enumerate}
+      \end{enumerate}
+\end{document}

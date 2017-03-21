@@ -1,0 +1,7 @@
+{
+	"common_dir" : "/data/smeer/16.0/Max10_devkit/Max10_devkit_baseline/devkit_baseline_revc/",
+	"acds_version" : "Version 16.0.0",
+	"platform" : "linux",
+	"os" : "Red Hat",
+	"qpf" : "top.qpf"
+}

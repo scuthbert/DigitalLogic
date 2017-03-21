@@ -1,0 +1,155 @@
+\documentclass[12pt]{article}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\textwidth}{6.5in}
+\setlength{\parindent}{0in}
+\setlength{\parskip}{\baselineskip}
+
+\usepackage{amsmath,amsfonts,amssymb,circuitikz}
+
+
+\begin{document}
+\title{Digital Logic Homework 1}
+
+ECEN 2350 Spring 2017 \hfill Homework 1\\
+Samuel Cuthbertson
+
+\hrulefill
+
+\begin{enumerate}
+
+	\item \textit{Convert the following decimal numbers into binary.}
+	\begin{enumerate}
+
+		\item \textit{$(30)_{10}$}
+
+    	\begin{align*}
+    	30 \div 2 &= 15 &r0 &&LSB \\
+        15 \div 2 &= 7 &r1 \\
+        7 \div 2 &= 3 &r1 \\
+        3 \div 2 &= 1 &r1 \\
+        1 \div 2 &= 0 &r1 &&MSB \\
+        \Rightarrow (30)_{10} &= \boxed{\mathbf{(11110)_2}}
+    	\end{align*}
+
+    	\item \textit{$(110)_{10}$}
+
+    	\begin{align*}
+    	110 \div 2 &= 55 &r0 &&LSB \\
+        55 \div 2 &= 27 &r1 \\
+        27 \div 2 &= 13 &r1 \\
+        13 \div 2 &= 6 &r1 \\
+        6 \div 2 &= 3 &r0 \\
+        3 \div 2 &= 1 &r1 \\
+        1 \div 2 &= 0 &r1 &&MSB \\
+        \Rightarrow (110)_{10} &= \boxed{\mathbf{(1101110)_2}}
+    	\end{align*}
+
+    	\newpage
+    	\addtocounter{enumii}{1}
+    	\item \textit{$(500)_{10}$}
+
+    	\begin{align*}
+    	500 \div 2 &= 250 &r0 &&LSB \\
+        250 \div 2 &= 125 &r0 \\
+        125 \div 2 &= 62 &r1 \\
+        62 \div 2 &= 31 &r0 \\
+        31 \div 2 &= 15 &r1 \\
+        15 \div 2 &= 7 &r1 \\
+        7 \div 2 &= 3 &r1 \\
+        3 \div 2 &= 1 &r1 \\
+        1 \div 2 &= 0 &r1 &&MSB \\
+        \Rightarrow (500)_{10} &= \boxed{\mathbf{(111110100)_2}}
+    	\end{align*}
+
+	\end{enumerate}
+
+    \vspace{3mm}
+	\item \textit{Extend the conversion algorithm shown in Figure 1.6 of the book to convert the decimal number $(857)_{10}$ to hexadecimal.}
+
+	    \begin{align*}
+    	857 \div 16 &= 53 &r9 &&LSB \\
+        53 \div 16 &= 3 &r5 \\
+        3 \div 16 &= 0 &r3 &&MSB \\
+        \Rightarrow (857)_{10} &= \boxed{\mathbf{(359)_{16}}}
+    	\end{align*}
+
+    \vspace{3mm}
+    \item \textit{Convert the following binary numbers into hexadecimal and decimal using the method shown in Section 1.5.1}
+
+    Note that $V(B) = \sum\limits_{i=0}^{n-1}b_i*2^i$. To convert to hex, we can take the value of a set of four bits and simply convert that decimal number to a single digit of hex.
+
+    \begin{enumerate}
+    	\item \textit{$(11101001)_2$}
+
+    	\begin{align*}
+    	(11101001)_2&=(1*2^7+1*2^6+1*2^5+0*2^4+1*2^3+0*2^2+0*2^1+1*2^0)_{10} \\
+        (11101001)_2&=(128 + 64 + 32 + 8 + 1)_{10} \\
+        (11101001)_2&=\boxed{\mathbf{(233)_{10}}}
+    	\end{align*}
+    	And for Hexadecimal:
+        \begin{align*}
+        (1110)_2 &= (1*2^3+1*2^2+1*2^1+0*2^0)_{10} & (1001)_2 &= (1*2^3+0*2^2+0*2^1+1*2^0)_{10} \\
+        (1110)_2 &= (8 + 4 + 2)_{10} & (1001)_2 &= (8 + 1)_{10} \\
+        (1110)_2 &= (14)_{10} = (E)_{16} & (1001)_2 &= (9)_{10} = (9)_{16} \\
+        &\Rightarrow(11101001)_2=\boxed{\mathbf{(E9)_{16}}}
+        \end{align*}
+
+    	\item \textit{$(1010101011)_2$}
+
+    	\begin{align*}
+    	(1010101011)_2&=(1*2^9+0*2^8+1*2^7+0*2^6+1*2^5+ \\
+        &\qquad 0*2^4+1*2^3+0*2^2+1*2^1+1*2^0)_{10} \\
+        (1010101011)_2&=(512 + 128 + 32 + 8 + 2 + 1)_{10} \\
+        (1010101011)_2&=\boxed{\mathbf{(683)_{10}}}
+    	\end{align*}
+    	And for Hexadecimal:
+        \begin{align*}
+        (10)_2 &= (2)_{10} &(1010)_2 &= (8 + 2)_{10} & (1011)_2 &= (8 + 2 + 1)_{10} \\
+        (10)_2 &= (2)_{10} = (2)_{16} &(1010)_2 &= (10)_{10} = (A)_{16} & (1011)_2 &= (11)_{10} = (B)_{16} \\
+        &&\llap{$\Rightarrow (1010101011)_2 = \boxed{\mathbf{(2AB)_{16}}}$}
+        \end{align*}
+
+    	\item \textit{$(011001011111)_2$}
+
+        \begin{align*}
+    	(011001011111)_2&=(0*2^{11}+1*2^{10}+1*2^9+0*2^8+0*2^7+1*2^6+ \\
+        &\qquad 0*2^5+1*2^4+1*2^3+1*2^2+1*2^1+1*2^0)_{10} \\
+        (011001011111)_2&=(1024 + 512 + 64 + 16 + 8 + 4 + 2 + 1)_{10} \\
+        (011001011111)_2&=\boxed{\mathbf{(1631)_{10}}}
+    	\end{align*}
+    	And for Hexadecimal:
+        \begin{align*}
+        (0110)_2 &= (4+2)_{10} &(0101)_2 &= (4 + 1)_{10} & (1111)_2 &= (8 + 4 + 2 + 1)_{10} \\
+        (0110)_2 &= (6)_{10} = (6)_{16} &(1010)_2 &= (5)_{10} = (5)_{16} & (1011)_2 &= (15)_{10} = (F)_{16} \\
+        &&\llap{$\Rightarrow (011001011111)_2 = \boxed{\mathbf{(65F)_{16}}}$}
+        \end{align*}
+
+    \end{enumerate}
+
+    \vspace{3mm}
+    \item \textit{Given the circuit in the homework, answer the following:}
+
+	\begin{enumerate}
+		\item \textit{Logical equation $H(F,D)$ in sum of products form} \\
+
+        The circuit shows H to be D or F, which is written as:
+        \begin{align*}
+        (F,D) &= \boxed{\mathbf{D + F}}
+        \end{align*}
+        \vspace{3mm}
+        \item \textit{Logical equation $G(A,B)$ in sum of products form} \\
+
+        Since $G(A,B) = H(F,D)$, $F = AB$, and $D = \overline{B}$, we can substitute A and B in for F and D as shown:
+        \begin{align*}
+        H(F,D) = D + F &= G(A,B) \\
+        \boxed{\mathbf{\overline{B} + AB}} &= G(A,B)
+        \end{align*}
+
+	\end{enumerate}
+
+
+\end{enumerate}
+
+
+\end{document}
