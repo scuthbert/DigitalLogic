@@ -485,7 +485,6 @@ set_global_assignment -name VERILOG_FILE top.v
 set_global_assignment -name CDF_FILE output_files/Chain.cdf
 set_global_assignment -name VERILOG_FILE Mux.v
 set_global_assignment -name VERILOG_FILE Comparison.v
-set_global_assignment -name VERILOG_FILE MuxStrange.v
 set_global_assignment -name VERILOG_FILE Arithmatic.v
 set_global_assignment -name VERILOG_FILE Magic.v
 set_global_assignment -name VERILOG_FILE SevenSegmentMode.v

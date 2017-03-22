@@ -5,7 +5,6 @@ source_file = 1, /home/sammo/Projects/DigitalLogic/Project1/Code/top.v
 source_file = 1, output_files/Chain.cdf
 source_file = 1, /home/sammo/Projects/DigitalLogic/Project1/Code/Mux.v
 source_file = 1, /home/sammo/Projects/DigitalLogic/Project1/Code/Comparison.v
-source_file = 1, /home/sammo/Projects/DigitalLogic/Project1/Code/MuxStrange.v
 source_file = 1, /home/sammo/Projects/DigitalLogic/Project1/Code/Arithmatic.v
 source_file = 1, /home/sammo/Projects/DigitalLogic/Project1/Code/Magic.v
 source_file = 1, /home/sammo/Projects/DigitalLogic/Project1/Code/SevenSegmentMode.v

@@ -7,9 +7,9 @@
 
 \usepackage[letterpaper, portrait, margin=1in]{geometry}
 \usepackage[usenames, dvipsnames, rgb]{xcolor}
-\usepackage{amsmath,amsfonts,amssymb,circuitikz,pdfpages,tikz}
+\usepackage{amsmath,amsfonts,amssymb,circuitikz,pdfpages,tikz,fancyvrb}
 
-\usetikzlibrary{matrix,calc,circuits.logic.US}
+\usetikzlibrary{matrix,calc,circuits.logic.US, shapes.geometric}
 \tikzstyle{branch}=[fill, shape=circle, minimum size=3pt, inner sep=0pt]
 
 %isolated term
@@ -196,19 +196,118 @@ Samuel Cuthbertson
 	   \item \textit{Book Problems: 4.3, 4.21}
      \begin{enumerate}
 	      \item[(4.3)] \textit{Consider $f = \overbar{w_1}\overbar{w_3} + w_2\overbar{w_3} + \overbar{w_1}w_2$. Use the truth table to derive a circuit for f that uses a 2-to-1 multiplexer.} \\
-          ASDDSAD
+          Note that the truth table for the above can be found as:
+          \begin{center}
+            \begin{tabular}{ccc|c}
+              $w_1$ & $w_2$ & $w_3$ & f \\
+              \hline
+              0 & 0 & 0 & 1 \\
+              0 & 0 & 1 & 0 \\
+              0 & 1 & 0 & 1 \\
+              0 & 1 & 1 & 1 \\
+              1 & 0 & 0 & 0 \\
+              1 & 0 & 1 & 0 \\
+              1 & 1 & 0 & 1 \\
+              1 & 1 & 1 & 0
+            \end{tabular}
+          \end{center}
+          Which is equvilent to the below circuit, using $w_1$ as the select in a muliplexer.
+          \begin{center}
+            \begin{tikzpicture}[circuit logic US,scale=1.25]
+              \node (aaa) at (0, 4.75) {$\overbar{w_3}$};
+              \node (aab) at (0, 4.25) {$w_2$};
+              \node[and gate US, draw, logic gate inputs=nn] at (1,4.5) (aag) {};
+              \draw (aaa)-- ($(aaa) + (0.5,0)$)|- (aag.input 1);
+              \draw (aab)-- ($(aab) + (0.5,0)$)|- (aag.input 2);
 
-	      \vspace{10mm}
-        \item[(4.21)] \textit{Write Verilog code for an 8-to-3 binary encoder.} \\
-	        WOW
+              \node (aba) at (0, 3.25) {$\overbar{w_2}$};
+              \node (abb) at (0, 3.75) {$\overbar{w_3}$};
+              \node[and gate US, draw, logic gate inputs=nn] at (1,3.5) (abg) {};
+              \draw (aba)-- ($(aba) + (0.5,0)$)|- (abg.input 2);
+              \draw (abb)-- ($(abb) + (0.5,0)$)|- (abg.input 1);
+
+              %layer 2
+              \node(aca) at (0, 2.75) {$w_2$};
+              \node[or gate US, draw, logic gate inputs=nn] at (2,3.45) (bag) {};
+              \draw (abg) -- (bag.input 1);
+              \draw (aca) -- ($(aca) + (1.5, 0)$)|- (bag.input 2);
+
+              %layer 3
+              \node[trapezium, draw, shape border uses incircle, shape border rotate=270, minimum size = 18pt] at (3,4.25) (orf) {};
+              \node(ada) at (3, 3) {$w_1$};
+
+              \draw (aag) -- ($(aag) + (1.25,0)$)|- (orf.north west);
+              \draw (bag) -- ($(bag) + (0.5,0)$)|- (orf.south west);
+              \draw (ada) -- (orf.south);
+
+
+              %layer 4
+              \node (f) at (4,4.25) {f};
+
+              \draw (orf) -- (f);
+
+            \end{tikzpicture}
+          \end{center}
+        \item[(4.21)] \textit{Write Verilog code for an 8-to-3 binary encoder.}
+	        \begin{Verbatim}[fontsize=\small]
+module Encode (b, f);
+    input [7:0] b;
+    output reg [2:0] f;
+    always@(*)
+    begin
+    		case(b)
+    		8'b00000001: f = 3'b000;
+    		8'b00000010: f = 3'b001;
+    		8'b00000100: f = 3'b010;
+    		8'b00001000: f = 3'b011;
+    		8'b00010000: f = 3'b100;
+    		8'b00100000: f = 3'b101;
+    		8'b01000000: f = 3'b110;
+    		8'b10000000: f = 3'b111;
+    		endcase
+    end
+endmodule
+
+	        \end{Verbatim}
   \end{enumerate}
 
 \newpage
 \item \textit{Implement the following circuits using only 2-to-1 mulitplexers.}
   \begin{enumerate}
 	   \item $f = \sum m(2,5,6,14)$ \\
-	       Wow look
-
+	       Note that the truth table, and circuit derived from it, are as shown below:
+         \begin{center}
+	      	  \begin{minipage}{0.2\textwidth}
+              \begin{center}
+                \begin{tabular}{cccc|c}
+                  a & b & c & d & f \\
+                  \hline
+                  0 & 0 & 0 & 0 & 0 \\
+                  0 & 0 & 0 & 1 & 0 \\
+                  0 & 0 & 1 & 0 & 1 \\
+                  0 & 0 & 1 & 1 & 0 \\
+                  0 & 1 & 0 & 0 & 0 \\
+                  0 & 1 & 0 & 1 & 1 \\
+                  0 & 1 & 1 & 0 & 1 \\
+                  0 & 1 & 1 & 1 & 0 \\
+                  1 & 0 & 0 & 0 & 0 \\
+                  1 & 0 & 0 & 1 & 0 \\
+                  1 & 0 & 1 & 0 & 0 \\
+                  1 & 0 & 1 & 1 & 0 \\
+                  1 & 1 & 0 & 0 & 0 \\
+                  1 & 1 & 0 & 1 & 0 \\
+                  1 & 1 & 1 & 0 & 1 \\
+                  1 & 1 & 1 & 1 & 0
+                \end{tabular}
+              \end{center}
+            \end{minipage}
+            \hfill
+            \begin{minipage}{0.6\textwidth}
+              \begin{center}
+                Put a circuit here!
+              \end{center}
+            \end{minipage}
+          \end{center}
 	   \item $f = \prod M(3,4,5,6,7)$ \\
 	       Golly gee
 
