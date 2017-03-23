@@ -245,7 +245,6 @@ Samuel Cuthbertson
               \node (f) at (4,4.25) {f};
 
               \draw (orf) -- (f);
-
             \end{tikzpicture}
           \end{center}
         \item[(4.21)] \textit{Write Verilog code for an 8-to-3 binary encoder.}
@@ -275,7 +274,7 @@ endmodule
 \item \textit{Implement the following circuits using only 2-to-1 mulitplexers.}
   \begin{enumerate}
 	   \item $f = \sum m(2,5,6,14)$ \\
-	       Note that the truth table, and circuit derived from it, are as shown below:
+	       Note that the truth table, and circuit visually derived from it, are as shown below:
          \begin{center}
 	      	  \begin{minipage}{0.2\textwidth}
               \begin{center}
@@ -286,8 +285,8 @@ endmodule
                   0 & 0 & 0 & 1 & 0 \\
                   0 & 0 & 1 & 0 & 1 \\
                   0 & 0 & 1 & 1 & 0 \\
-                  0 & 1 & 0 & 0 & 0 \\
-                  0 & 1 & 0 & 1 & 1 \\
+                  0 & 1 & 0 & 0 & 1 \\
+                  0 & 1 & 0 & 1 & 0 \\
                   0 & 1 & 1 & 0 & 1 \\
                   0 & 1 & 1 & 1 & 0 \\
                   1 & 0 & 0 & 0 & 0 \\
@@ -304,13 +303,112 @@ endmodule
             \hfill
             \begin{minipage}{0.6\textwidth}
               \begin{center}
-                Put a circuit here!
+                \begin{tikzpicture}[circuit logic US,scale=1.25]
+                  \node[trapezium, draw, shape border uses incircle, shape border rotate=270, minimum size = 18pt] at (2,5.5) (bag) {};
+                  \node (abc) at (2, 4.5) {$b$};
+                  \draw (abc) -- (bag);
+
+                  \node[trapezium, draw, shape border uses incircle, shape border rotate=270, minimum size = 18pt] at (1,6.5) (bcg) {};
+                  \node (acb) at (1, 5.5) {$c$};
+                  \draw (acb) -- (bcg);
+
+                  \node[trapezium, draw, shape border uses incircle, shape border rotate=270, minimum size = 18pt] at (2,3.5) (cag) {};
+                  \node (cbc) at (2, 2.5) {$b$};
+                  \draw (cbc) -- (cag);
+
+                  \node[trapezium, draw, shape border uses incircle, shape border rotate=270, minimum size = 18pt] at (1,2.5) (ccg) {};
+                  \node (ccb) at (1, 1.5) {$c$};
+                  \draw (ccb) -- (ccg);
+
+                  %layer 3
+                  \node[trapezium, draw, shape border uses incircle, shape border rotate=270, minimum size = 18pt] at (3,4.25) (orf) {};
+                  \node(ada) at (3, 3.25) {$a$};
+                  \draw (ada) -- (orf);
+
+                  %layer 2
+                  \node (aca) at ($(cag.north west) - (1.75,0)$) {$\overbar{d}$};
+                  \draw (aca) -- (cag.north west);
+                  \node (afa) at ($(ccg.north west) - (0.75,0)$) {$\overbar{d}$};
+                  \draw (afa) -- (ccg.north west);
+                  \node (aea) at ($(ccg.south west) - (0.75,0)$) {$0$};
+                  \draw (aea) -- (ccg.south west);
+                  \draw (bag) -- ($(bag) + (0.5, 0)$) |- (orf.north west);
+
+                  \node (aba) at ($(bag.south west) - (1.75, 0)$) {$0$};
+                  \draw (aba) -- (bag.south west);
+
+                  \draw (bcg) -- ($(bcg) + (0.5, 0)$) |- (bag.north west);
+
+                  \draw (cag) -- ($(cag) + (0.5, 0)$) |- (orf.south west);
+                  \draw (ccg) -- ($(ccg) + (0.5, 0)$) |- (cag.south west);
+
+                  \node (abb) at ($(bcg.north west) - (0.75, 0)$) {$\overbar{d}$};
+                  \draw (abb) -- (bcg.north west);
+
+                  \node (abc) at ($(bcg.south west) - (0.75, 0)$) {$0$};
+                  \draw (abc) -- (bcg.south west);
+
+                  %layer 4
+                  \node (f) at (4,4.25) {f};
+
+                  \draw (orf) -- (f);
+                \end{tikzpicture}
               \end{center}
             \end{minipage}
           \end{center}
 	   \item $f = \prod M(3,4,5,6,7)$ \\
-	       Golly gee
+     Note that the truth table, and circuit derived from it, are as shown below:
+      \begin{center}
+        \begin{minipage}{0.2\textwidth}
+           \begin{center}
+             \begin{tabular}{ccc|c}
+               a & b & c & f \\
+               \hline
+               0 & 0 & 0 & 1 \\
+               0 & 0 & 1 & 1 \\
+               0 & 1 & 0 & 1 \\
+               0 & 1 & 1 & 0 \\
+               1 & 0 & 0 & 0 \\
+               1 & 0 & 1 & 0 \\
+               1 & 1 & 0 & 0 \\
+               1 & 1 & 1 & 0 \\
+             \end{tabular}
+           \end{center}
+         \end{minipage}
+         \hfill
+         \begin{minipage}{0.6\textwidth}
+           \begin{center}
+             \begin{tikzpicture}[circuit logic US,scale=1.25]
+               \node[trapezium, draw, shape border uses incircle, shape border rotate=270, minimum size = 18pt] at (2,5.5) (bag) {};
+               \node (abc) at (2, 4.5) {$b$};
+               \draw (abc) -- (bag);
 
+               %layer 3
+               \node[trapezium, draw, shape border uses incircle, shape border rotate=270, minimum size = 18pt] at (3,4.25) (orf) {};
+               \node(ada) at (3, 3.25) {$a$};
+
+               %layer 2
+               \node(aca) at ($(orf.south west) - (1.75,0)$) {$0$};
+               \draw (aca) -- (orf.south west);
+               \draw (bag) -- ($(bag) + (0.5, 0)$) |- (orf.north west);
+               \draw (ada) -- (orf.south);
+
+               \node (aba) at ($(bag.south west) - (0.75, 0)$) {$\overbar{c}$};
+               \draw (aba) -- (bag.south west);
+
+               \node (abb) at ($(bag.north west) - (0.75, 0)$) {$1$};
+               \draw (abb) -- (bag.north west);
+
+               \draw (abb) -- (bag.north west);
+
+               %layer 4
+               \node (f) at (4,4.25) {f};
+
+               \draw (orf) -- (f);
+             \end{tikzpicture}
+           \end{center}
+         \end{minipage}
+       \end{center}
   \end{enumerate}
 
 \newpage
