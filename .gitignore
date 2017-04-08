@@ -1,8 +1,10 @@
 db/
 incremental_db/
 simulation/
+output_files/
 *.aux
 *.fdb_latexmk
 *.fls
 *.log
 *.gz
+*.bak
