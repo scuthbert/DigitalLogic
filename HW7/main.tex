@@ -27,6 +27,106 @@
 \renewcommand{\arraystretch}{1.25}
 
 \makeatletter
+    \pgfdeclareshape{JK}{
+      \savedanchor\northeast{%
+        \pgfmathsetlength\pgf@x{\pgfshapeminwidth}%
+        \pgfmathsetlength\pgf@y{\pgfshapeminheight}%
+        \pgf@x=0.5\pgf@x
+        \pgf@y=0.5\pgf@y
+      }
+      % This is redundant, but makes some things easier:
+      \savedanchor\southwest{%
+        \pgfmathsetlength\pgf@x{\pgfshapeminwidth}%
+        \pgfmathsetlength\pgf@y{\pgfshapeminheight}%
+        \pgf@x=-0.5\pgf@x
+        \pgf@y=-0.5\pgf@y
+      }
+      \inheritsavedanchors[from=rectangle]
+      \inheritanchorborder[from=rectangle]
+      \anchor{center}{\pgfpointorigin}
+      \anchor{north}{\northeast \pgf@x=0pt}
+      \anchor{east}{\northeast \pgf@y=0pt}
+      \anchor{south}{\southwest \pgf@x=0pt}
+      \anchor{west}{\southwest \pgf@y=0pt}
+      \anchor{north east}{\northeast}
+      \anchor{north west}{\northeast \pgf@x=-\pgf@x}
+      \anchor{south west}{\southwest}
+      \anchor{south east}{\southwest \pgf@x=-\pgf@x}
+      \anchor{J}{
+        \pgf@process{\northeast}%
+        \pgf@x=-1\pgf@x%
+        \pgf@y=.5\pgf@y%
+      }
+      \anchor{CLK}{
+        \pgf@process{\northeast}%
+        \pgf@x=-1\pgf@x%
+        \pgf@y=0\pgf@y%
+      }
+      \anchor{K}{
+        \pgf@process{\northeast}%
+        \pgf@x=-1\pgf@x%
+        \pgf@y=-0.5\pgf@y%
+      }
+      \anchor{Q}{
+        \pgf@process{\northeast}%
+        \pgf@y=.5\pgf@y%
+      }
+      \anchor{Qn}{
+        \pgf@process{\northeast}%
+        \pgf@y=-.5\pgf@y%
+      }
+
+      \backgroundpath{
+        % Rectangle box
+        \pgfpathrectanglecorners{\southwest}{\northeast}
+        % Angle (>) for clock input
+        \pgf@anchor@JK@CLK
+        \pgf@xa=\pgf@x \pgf@ya=\pgf@y
+        \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+        \pgf@xc=\pgf@x \pgf@yc=\pgf@y
+        \pgfmathsetlength\pgf@x{1.6ex} % size depends on font size
+        \advance\pgf@ya by \pgf@x
+        \advance\pgf@xb by \pgf@x
+        \advance\pgf@yc by -\pgf@x
+        \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+        \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yb}}
+        \pgfpathlineto{\pgfpoint{\pgf@xc}{\pgf@yc}}
+        \pgfclosepath
+
+        \begingroup
+
+        \pgf@anchor@JK@K
+        \pgftext[left,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=\pgfshapeinnerxsep]{\raisebox{-0.75ex}{K}}
+
+
+        \pgf@anchor@JK@J
+        \pgftext[left,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=\pgfshapeinnerxsep]{\raisebox{-0.75ex}{J}}
+
+        \pgf@anchor@JK@Q
+        \pgftext[right,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=-\pgfshapeinnerxsep]{\raisebox{-.75ex}{Q}}
+
+        \pgf@anchor@JK@Qn
+        \pgftext[right,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=-\pgfshapeinnerxsep]{\raisebox{-.75ex}{$\overline{\mbox{Q}}$}}
+
+        \endgroup
+      }
+    }
+    % Key to add font macros to the current font
+    \tikzset{add font/.code={\expandafter\def\expandafter\tikz@textfont
+            \expandafter{\tikz@textfont#1}}}
+
+    % Define default style for this node
+    \tikzset{flip flop/port labels/.style={font=\sffamily\scriptsize}}
+    \tikzset{every JK node/.style={draw,minimum width=1.5cm,
+            minimum height=2.25cm,inner sep=1mm,outer sep=0pt,
+            cap=round,add font=\sffamily}}
+\makeatother
+
+\makeatletter
     \pgfdeclareshape{tff}{
       \savedanchor\northeast{%
         \pgfmathsetlength\pgf@x{\pgfshapeminwidth}%
@@ -112,7 +212,7 @@
     % Define default style for this node
     \tikzset{flip flop/port labels/.style={font=\sffamily\scriptsize}}
     \tikzset{every tff node/.style={draw,minimum width=1.5cm,
-            minimum height=2.25cm,very thick,inner sep=1mm,outer sep=0pt,
+            minimum height=2.25cm,inner sep=1mm,outer sep=0pt,
             cap=round,add font=\sffamily}}
 \makeatother
 
@@ -364,7 +464,7 @@ endmodule
           \node (Q1o) at (7.05,7) {$Q_1$};
 
           %Q1 connections
-          \draw (Q0CLB) -- ++(0:7.25) node[branch] (Q1CLB) {} -- (M1);
+          \draw (Q0CLB) -- ++(0:7.25) -- (M1);
           \draw (X0.output) -- ++(.35,0) |- (D1.D);
           \draw (D1.Q) -- ++(0:.3) node[branch] (Q1) {} -- (A11.input 2);
           \draw (D1.Qn) -- (A12.input 1);
@@ -374,7 +474,8 @@ endmodule
           \draw (M1) -- (X1.input 2);
           \draw (nQ02) -- ++(0:6) |- (A12.input 2);
           \draw (Q02) -- ++(0:6) |- (A11.input 1);
-          \draw (Q1) -- (Q1o);
+          \draw (Q1) -- ++(0,1.5) node[branch] (Q12) {} -- (Q1o);
+          \draw (Q12) -- ++(-4,0) |- (X0.input 1);
 
           %Q2
           \node[shape=dff, draw] (D2) at (13,3) {};
@@ -392,7 +493,25 @@ endmodule
     \item[5.25:] \textit{Using the circuit shown in the book, complete the
                          below timing diagram.}
 
-      Placeholder answer
+      As all gates have a 1ns delay, any changes to \texttt{A} from \texttt{D}
+        will take 2ns, while changes from \texttt{CLK} will take 1ns. Similarly,
+        changes from \texttt{D} to \texttt{Q} will propagate in 4ns and any
+        changes to \texttt{Q} from \texttt{CLK} will take 2ns.
+      \vspace{3mm}
+      \begin{center}
+        \begin{tikztimingtable}
+          Clock & L L L L L H H H H H L L L L L H H H H H L L L L L H H H H H\\
+          D &     L L H H L L H H H H H L L L L L L L L L L L H H H H H H H H\\
+          A &     H H H H H H L L H H H H H H H H L L L L L H H H H H H H H H\\
+          Q &     L L L L L L L L L L H H H H H H H H H H L L L L L L L H H H\\
+        \extracode
+          \tablerules
+          \begin{pgfonlayer}{background}
+            \foreach \l in {1,...,30}
+              \vertlines[help lines]{\l};
+          \end{pgfonlayer}
+        \end{tikztimingtable}
+      \end{center}
 
   \end{enumerate}
 
@@ -401,9 +520,88 @@ endmodule
                 shift left, shift right, and synchronously clear. Provide a
                 characteristic table for the control operations.}
 
-    Placeholder answer
+    Shown below is an adaption of the circuit shown in Figure 5.18 of the
+      textbook, extending the multiplexer to a 4-to-1 mux.
+    \begin{center}
+      \begin{tikzpicture}[scale=.75, transform shape]
+        %Inputs
+        \node (CLK) at (-3, -2.5) {CLK};
+        \node (CTRL) at (-3, 3) {CTRL};
+        \node (SI) at (-3, .85) {Serial In};
 
-  \newpage
+        %q0
+        \node[mux, draw] (M0) at (0,0.55) {00\\01\\10\\11};
+        \node[shape=dff, draw] (D0) at (1.5,0) {};
+        \node (Q0o) at (2.5,4) {$Q_0$};
+        \node (Q0i) at (-.75,-3.5) {$P_0$};
+        \draw (D0.D) -- ++(-.4,0);
+        \node (00) at (-1,1.35) {$0$};
+        \draw (00) -- ++(.65,0);
+        \draw (SI) -- ++(2.65,0);
+        \draw (D0.Q) -- ++(.25,0) node[branch] (Q0) {} -- ++(1.15,0);
+        \draw (Q0) -- ++(0,-2.25) -- ++(-4,0) -- ++(0,2) -- ++(1.15,0);
+        \draw (Q0i) -- ++(0,3.3) -- ++(.4,0);
+        \draw (Q0) -- (Q0o);
+        \draw (CTRL) -| (M0);
+        \draw (CLK) -- ++(3.25,0) node[branch](CLK0){} |- (D0.CLK);
+
+        %q1
+        \node[mux, draw] (M1) at (4,0.3) {00\\01\\10\\11};
+        \node[shape=dff, draw] (D1) at (5.5,-.25) {};
+        \node (Q1o) at (6.5,4) {$Q_1$};
+        \node (Q1i) at (3.35,-3.5) {$P_1$};
+        \draw (D1.D) -- ++(-.4,0);
+        \node (01) at (3,1.05) {$0$};
+        \draw (01) -- ++(.65,0);
+        \draw (D1.Q) -- ++(.25,0) node[branch] (Q1) {} -- ++(1.15,0);
+        \draw (Q1) -- ++(0,-2.25) -- ++(-3.5,0) -- ++(0,2) -- ++(0.65,0);
+        \draw (Q1i) -- ++(0,3) -- ++(.3,0);
+        \draw (Q1) -- (Q1o);
+        \draw (CTRL) -| (M1);
+        \draw (CLK0) -- ++(4,0) node[branch](CLK1){} |- (D1.CLK);
+
+        %q2
+        \node[mux, draw] (M2) at (8,0.1) {00\\01\\10\\11};
+        \node[shape=dff, draw] (D2) at (9.5,-.5) {};
+        \node (Q2o) at (10.5,4) {$Q_2$};
+        \node (Q2i) at (7.35,-3.5) {$P_2$};
+        \draw (D2.D) -- ++(-.4,0);
+        \node (02) at (7,0.75) {$0$};
+        \draw (02) -- ++(.65,0);
+        \draw (D2.Q) -- ++(.25,0) node[branch] (Q2) {} -- ++(1.15,0);
+        \draw (Q2) -- ++(0,-2.25) -- ++(-3.5,0) -- ++(0,2) -- ++(0.65,0);
+        \draw (Q2i) -- ++(0,2.8) -- ++(.3,0);
+        \draw (Q2) -- (Q2o);
+        \draw (CTRL) -| (M2);
+        \draw (CLK1) -- ++(4,0) node[branch](CLK2){} |- (D2.CLK);
+
+        %q3
+        \node[mux, draw] (M3) at (12,-.15) {00\\01\\10\\11};
+        \node[shape=dff, draw] (D3) at (13.5,-.75) {};
+        \node (Q3o) at (14.5,4) {$Q_3$};
+        \node (Q3i) at (11.35,-3.5) {$P_3$};
+        \draw (D3.D) -- ++(-.4,0);
+        \node (03) at (7,0.75) {$0$};
+        \draw (03) -- ++(.65,0);
+        \draw (D3.Q) -- ++(.25,0) node[branch] (Q3) {} -- (Q3o);
+        \draw (Q3) -- ++(0,-2) -- ++(-3.5,0) -- ++(0,1.75) -- ++(0.65,0);
+        \draw (Q3i) -- ++(0,2.6) -- ++(.3,0);
+        \draw (CTRL) -| (M3);
+        \draw (CLK2) -- ++(4,0) node[branch](CLK3){} |- (D3.CLK);
+      \end{tikzpicture}
+    \end{center}
+
+    \begin{center}
+      \begin{tabular}{c | c}
+        CTRL & Behaviour \\
+        \hline
+        00 & Syncronous Clear: $Q(t+1) = 0$ \\
+        01 & Right Shift \\
+        10 & Left Shift \\
+        11 & Parallel Load
+      \end{tabular}
+    \end{center}
+
   \item \textit{Implement a 3-bit up-counter using only one D flip-flop, one
                 T flip-flop, one JK flip-flop and one AND gate. Assume all
                 flip-flops are positive edge triggered. Show your circuit and
@@ -431,11 +629,41 @@ endmodule
 
     \begin{center}
       \begin{tikzpicture}
-          \node[mux] (m) at (0,0) {0\\1};
+          \node[shape=dff] (d0) at (0,0) {};
+          \node[shape=tff] (t0) at (5,0) {};
+          \node[shape=JK] (jk) at (10,0) {};
+          \node (CLK) at (-2.5,-0.56) {$CLK$};
+          \draw (CLK) -- (d0.CLK);
+
+          \node (q0) at (1.25,-3) {$Q_0$};
+          \draw (d0.Q) -| (q0);
+
+          \node (q1) at (6.25,-3) {$Q_1$};
+          \draw (t0.Q) -| (q1);
+
+          \node (q2) at (11.25,-3) {$Q_2$};
+          \draw (jk.Q) -| (q2);
+
+          \node (t1) at (3.5,0.57) {$1$};
+          \draw (t1) -- (t0.T);
+
+          \node (j1) at (8.5,0.57) {$1$};
+          \draw (j1) -- (jk.J);
+          \node (j2) at (8.5,-0.56) {$1$};
+          \draw (j2) -- (jk.K);
+
+          \draw (d0.Qn) -- (t0.CLK);
+          \draw (d0.Qn) -- ++(1,0) node[branch]{} -- ++(0,-1)
+            node[branch](q0b){} -- ++(-3,0) |- (d0.D);
+
+          \node[and gate US, logic gate inputs=nn, draw] (and1) at (7,-.65) {};
+          \draw (q0b) -- ++(4.25,0) |- (and1.input 2);
+          \draw (t0.Qn) -- (and1.input 1);
+
+          \draw (and1.output) -- ++(.5,0) |- (jk.CLK);
       \end{tikzpicture}
     \end{center}
 
-  \newpage
   \item \textit{Write the behavioural Verilog for 5.16, calling the module
                 \texttt{up\_down\_counter}.}
 
