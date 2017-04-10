@@ -1,13 +1,13 @@
-module LSRF #(parameter size = 22)(clk, value);
-	input reg clk;
-	output reg [1-size:0] value_q;
-	
-	reg [1-size:0] value_d;
+module up_down_counter(clk, ctrl, value);
+	input clk;
+	input ctrl;
+	output reg [2:0] value;
 	
 	always@(posedge clk)
 	begin
-		value_q = value_d >> 2;
+		case(updown)
+			1'b0: value <= value - 1;
+			1'b1: value <= value + 1;
+		endcase
 	end
-	
-
 endmodule
