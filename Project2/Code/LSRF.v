@@ -5,7 +5,7 @@ module up_down_counter(clk, ctrl, value);
 	
 	always@(posedge clk)
 	begin
-		case(updown)
+		case(ctrl)
 			1'b0: value <= value - 1;
 			1'b1: value <= value + 1;
 		endcase

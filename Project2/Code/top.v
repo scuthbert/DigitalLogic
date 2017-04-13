@@ -3,6 +3,6 @@ module top(SW, LEDR, ADC_CLK_10);
 	output[9:0] LEDR;
 	input ADC_CLK_10;
 	
-	assign LEDR = SW;
-
+	clk_divider #(14) cd(ADC_CLK_10, 14'h2710, LEDR); // Magic value = 10,000	
+	
 endmodule
