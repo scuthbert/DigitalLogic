@@ -8,7 +8,7 @@ module LFSR #(parameter SIZE = 1)(clk, value);
 	begin
 		if(value == {(SIZE-1){1'b0}})
 		begin
-			value = {(SIZE-1){1'b1}};
+			value[SIZE-1] = 1'b0;
 		end
 		feedback = value[SIZE-1] ^ value[SIZE-2];
 		value = value << 1;
