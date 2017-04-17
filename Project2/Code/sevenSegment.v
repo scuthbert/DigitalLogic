@@ -20,9 +20,9 @@ module sevenSegment(digit, segment, decimal);
 				4'h9: segment = 8'b00011000;
 				4'ha: segment = 8'b00001000;
 				4'hb: segment = 8'b00000011;
-				4'hc: segment = 8'b01000110;
-				4'hd: segment = 8'b00100001;
-				4'he: segment = 8'b00000110;
+				4'hc: segment = 8'b00001110;//U
+				4'hd: segment = 8'b01111111;//Space
+				4'he: segment = 8'b00100010;//S
 				4'hf: segment = 8'b00001110;
 			endcase
 		end
@@ -41,9 +41,9 @@ module sevenSegment(digit, segment, decimal);
 				4'h9: segment = 8'b10011000;
 				4'ha: segment = 8'b10001000;
 				4'hb: segment = 8'b10000011;
-				4'hc: segment = 8'b11000110;
-				4'hd: segment = 8'b10100001;
-				4'he: segment = 8'b10000110;
+				4'hc: segment = 8'b11100011;//U
+				4'hd: segment = 8'b11111111;//Space
+				4'he: segment = 8'b10010010;//S
 				4'hf: segment = 8'b10001110;
 			endcase
 		end
