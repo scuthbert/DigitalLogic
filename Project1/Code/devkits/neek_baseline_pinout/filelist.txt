@@ -1,3 +1,0 @@
-golden_top.v
-platform_setup.tcl
-filelist.txt
