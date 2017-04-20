@@ -55,6 +55,10 @@ module master_ctrl(clk,
 			Paused: // aka 'GO BUFFS'
 				begin
 
+					if(high_score_q == 20'd0) begin
+						high_score_d = 20'b10011001100110011001;
+					end
+				
 					if(switch[0]) begin
 						display_d[25] = 1'b0; // No decimal
 						display_d[24:0] = go_buffs; // Display contents of go_buffs
