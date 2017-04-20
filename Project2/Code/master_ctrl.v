@@ -1,5 +1,5 @@
 module master_ctrl(clk,
-									 btn,
+						 btn,
 									 switch,
 									 go_buffs,
 									 rand_num,
@@ -39,6 +39,16 @@ module master_ctrl(clk,
 
 	always@(*)
 	begin
+	
+		state_d = state_q;
+		switch_num_d = switch_num_q;
+		stored_time_d = stored_time_q;
+		rand_num_saved_d = rand_num_saved_q;
+		
+		clreset_d = clreset_q;
+		display_d = display_q;
+		led_d = led_q;
+	
 		case(state_q)
 			Paused: // aka 'GO BUFFS'
 				begin
