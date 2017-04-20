@@ -1,13 +1,13 @@
 module master_ctrl(clk,
 						 btn,
-									 switch,
-									 go_buffs,
-									 rand_num,
-									 count,
-									 count_binary,
-									 clreset_q,
-									 display_q,
-									 led_q);
+						 switch,
+						 go_buffs,
+						 rand_num,
+						 count,
+						 count_binary,
+						 clreset_q,
+						 display_q,
+						 led_q);
 
 	input clk;
 	input [1:0] btn;
@@ -28,14 +28,15 @@ module master_ctrl(clk,
 
 	// Main state machine variables
 	localparam  Paused = 2'b00,
-							RandWait = 2'b01,
-							UserWait = 2'b10,
-							Display = 2'b11;
+					RandWait = 2'b01,
+					UserWait = 2'b10,
+					Display = 2'b11;
 
 	reg [1:0] state_d, state_q;
 	reg [3:0] switch_num_d, switch_num_q;
 	reg [19:0] stored_time_d, stored_time_q;
 	reg [14:0] rand_num_saved_d, rand_num_saved_q;
+	reg [19:0] high_score_d, high_score_q;
 
 	always@(*)
 	begin
@@ -44,6 +45,7 @@ module master_ctrl(clk,
 		switch_num_d = switch_num_q;
 		stored_time_d = stored_time_q;
 		rand_num_saved_d = rand_num_saved_q;
+		high_score_d = high_score_q;
 		
 		clreset_d = clreset_q;
 		display_d = display_q;
@@ -53,8 +55,13 @@ module master_ctrl(clk,
 			Paused: // aka 'GO BUFFS'
 				begin
 
-					display_d[25] = 1'b0; // No decimal
-					display_d[24:0] = go_buffs; // Display contents of go_buffs
+					if(switch[0]) begin
+						display_d[25] = 1'b0; // No decimal
+						display_d[24:0] = go_buffs; // Display contents of go_buffs
+					end else begin
+						display_d[25] = 1'b1;
+						display_d[24:0] = high_score_q;
+					end
 
 					if(~btn[1]) // If start
 					begin
@@ -159,6 +166,9 @@ module master_ctrl(clk,
 					begin
 						stored_time_d = count; // Save the current count
 						clreset_d = 1'b1; // Set the counter to reset
+						if(count < high_score_q) begin
+							high_score_d = count;
+						end
 					end
 
 					led_d = 10'b0000000000; // Clear the LEDs
@@ -183,7 +193,6 @@ module master_ctrl(clk,
 			clreset_q <= 1'b1; // Set the clock to reset
 			led_q <= 10'd0; // Clear the LEDs
 			state_q <= Paused; // Set the state to PS
-			// state_q = Paused; // Do we need this?
 
 		end
 		else begin
@@ -195,6 +204,7 @@ module master_ctrl(clk,
 			switch_num_q <= switch_num_d;
 			stored_time_q <= stored_time_d;
 			rand_num_saved_q <= rand_num_saved_d;
+			high_score_q <= high_score_d;
 			state_q <= state_d;
 
 		end
