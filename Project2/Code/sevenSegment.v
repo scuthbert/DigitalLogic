@@ -3,7 +3,7 @@ module sevenSegment(digit, segment, decimal);
 	input decimal;
 	output reg [7:0] segment;
 	
-	always@(digit)
+	always@(digit, decimal)
 	begin
 		if(decimal)
 		begin
