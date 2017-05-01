@@ -1,0 +1,349 @@
+\documentclass[12pt]{article}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\textwidth}{6.5in}
+\setlength{\parindent}{0in}
+\setlength{\parskip}{\baselineskip}
+
+\usepackage[letterpaper, portrait, margin=1in]{geometry}
+\usepackage[usenames, dvipsnames, rgb]{xcolor}
+\usepackage{amsmath,amsfonts,amssymb,circuitikz,pdfpages,tikz,fancyvrb}
+\usepackage{tikz-timing}
+
+\usetikzlibrary{matrix,calc,circuits.logic.US,shapes.geometric}
+\tikzstyle{branch}=[fill, shape=circle, minimum size=3pt, inner sep=0pt]
+\tikzstyle{mux} = [ trapezium,   draw,
+                    shape border rotate = 270, trapezium angle = 60,
+                    inner ysep=0pt, outer sep=1pt, inner xsep=1pt,
+                    text width = 1.5em, align = center,
+                    node distance=3cm]
+
+
+\newcommand{\overbar}[1]
+    {\mkern1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern1.5mu}
+
+\begin{document}
+
+\renewcommand{\arraystretch}{1.25}
+
+\makeatletter
+    \pgfdeclareshape{JK}{
+      \savedanchor\northeast{%
+        \pgfmathsetlength\pgf@x{\pgfshapeminwidth}%
+        \pgfmathsetlength\pgf@y{\pgfshapeminheight}%
+        \pgf@x=0.5\pgf@x
+        \pgf@y=0.5\pgf@y
+      }
+      % This is redundant, but makes some things easier:
+      \savedanchor\southwest{%
+        \pgfmathsetlength\pgf@x{\pgfshapeminwidth}%
+        \pgfmathsetlength\pgf@y{\pgfshapeminheight}%
+        \pgf@x=-0.5\pgf@x
+        \pgf@y=-0.5\pgf@y
+      }
+      \inheritsavedanchors[from=rectangle]
+      \inheritanchorborder[from=rectangle]
+      \anchor{center}{\pgfpointorigin}
+      \anchor{north}{\northeast \pgf@x=0pt}
+      \anchor{east}{\northeast \pgf@y=0pt}
+      \anchor{south}{\southwest \pgf@x=0pt}
+      \anchor{west}{\southwest \pgf@y=0pt}
+      \anchor{north east}{\northeast}
+      \anchor{north west}{\northeast \pgf@x=-\pgf@x}
+      \anchor{south west}{\southwest}
+      \anchor{south east}{\southwest \pgf@x=-\pgf@x}
+      \anchor{J}{
+        \pgf@process{\northeast}%
+        \pgf@x=-1\pgf@x%
+        \pgf@y=.5\pgf@y%
+      }
+      \anchor{CLK}{
+        \pgf@process{\northeast}%
+        \pgf@x=-1\pgf@x%
+        \pgf@y=0\pgf@y%
+      }
+      \anchor{K}{
+        \pgf@process{\northeast}%
+        \pgf@x=-1\pgf@x%
+        \pgf@y=-0.5\pgf@y%
+      }
+      \anchor{Q}{
+        \pgf@process{\northeast}%
+        \pgf@y=.5\pgf@y%
+      }
+      \anchor{Qn}{
+        \pgf@process{\northeast}%
+        \pgf@y=-.5\pgf@y%
+      }
+
+      \backgroundpath{
+        % Rectangle box
+        \pgfpathrectanglecorners{\southwest}{\northeast}
+        % Angle (>) for clock input
+        \pgf@anchor@JK@CLK
+        \pgf@xa=\pgf@x \pgf@ya=\pgf@y
+        \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+        \pgf@xc=\pgf@x \pgf@yc=\pgf@y
+        \pgfmathsetlength\pgf@x{1.6ex} % size depends on font size
+        \advance\pgf@ya by \pgf@x
+        \advance\pgf@xb by \pgf@x
+        \advance\pgf@yc by -\pgf@x
+        \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+        \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yb}}
+        \pgfpathlineto{\pgfpoint{\pgf@xc}{\pgf@yc}}
+        \pgfclosepath
+
+        \begingroup
+
+        \pgf@anchor@JK@K
+        \pgftext[left,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=\pgfshapeinnerxsep]{\raisebox{-0.75ex}{K}}
+
+
+        \pgf@anchor@JK@J
+        \pgftext[left,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=\pgfshapeinnerxsep]{\raisebox{-0.75ex}{J}}
+
+        \pgf@anchor@JK@Q
+        \pgftext[right,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=-\pgfshapeinnerxsep]{\raisebox{-.75ex}{Q}}
+
+        \pgf@anchor@JK@Qn
+        \pgftext[right,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=-\pgfshapeinnerxsep]{\raisebox{-.75ex}{$\overline{\mbox{Q}}$}}
+
+        \endgroup
+      }
+    }
+    % Key to add font macros to the current font
+    \tikzset{add font/.code={\expandafter\def\expandafter\tikz@textfont
+            \expandafter{\tikz@textfont#1}}}
+
+    % Define default style for this node
+    \tikzset{flip flop/port labels/.style={font=\sffamily\scriptsize}}
+    \tikzset{every JK node/.style={draw,minimum width=1.5cm,
+            minimum height=2.25cm,inner sep=1mm,outer sep=0pt,
+            cap=round,add font=\sffamily}}
+\makeatother
+
+\makeatletter
+    \pgfdeclareshape{tff}{
+      \savedanchor\northeast{%
+        \pgfmathsetlength\pgf@x{\pgfshapeminwidth}%
+        \pgfmathsetlength\pgf@y{\pgfshapeminheight}%
+        \pgf@x=0.5\pgf@x
+        \pgf@y=0.5\pgf@y
+      }
+      % This is redundant, but makes some things easier:
+      \savedanchor\southwest{%
+        \pgfmathsetlength\pgf@x{\pgfshapeminwidth}%
+        \pgfmathsetlength\pgf@y{\pgfshapeminheight}%
+        \pgf@x=-0.5\pgf@x
+        \pgf@y=-0.5\pgf@y
+      }
+      \inheritsavedanchors[from=rectangle]
+      \inheritanchorborder[from=rectangle]
+      \anchor{center}{\pgfpointorigin}
+      \anchor{north}{\northeast \pgf@x=0pt}
+      \anchor{east}{\northeast \pgf@y=0pt}
+      \anchor{south}{\southwest \pgf@x=0pt}
+      \anchor{west}{\southwest \pgf@y=0pt}
+      \anchor{north east}{\northeast}
+      \anchor{north west}{\northeast \pgf@x=-\pgf@x}
+      \anchor{south west}{\southwest}
+      \anchor{south east}{\southwest \pgf@x=-\pgf@x}
+      \anchor{T}{
+        \pgf@process{\northeast}%
+        \pgf@x=-1\pgf@x%
+        \pgf@y=.5\pgf@y%
+      }
+      \anchor{CLK}{
+        \pgf@process{\northeast}%
+        \pgf@x=-1\pgf@x%
+        \pgf@y=-.5\pgf@y%
+      }
+      \anchor{Q}{
+        \pgf@process{\northeast}%
+        \pgf@y=.5\pgf@y%
+      }
+      \anchor{Qn}{
+        \pgf@process{\northeast}%
+        \pgf@y=-.5\pgf@y%
+      }
+
+      \backgroundpath{
+        % Rectangle box
+        \pgfpathrectanglecorners{\southwest}{\northeast}
+        % Angle (>) for clock input
+        \pgf@anchor@tff@CLK
+        \pgf@xa=\pgf@x \pgf@ya=\pgf@y
+        \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+        \pgf@xc=\pgf@x \pgf@yc=\pgf@y
+        \pgfmathsetlength\pgf@x{1.6ex} % size depends on font size
+        \advance\pgf@ya by \pgf@x
+        \advance\pgf@xb by \pgf@x
+        \advance\pgf@yc by -\pgf@x
+        \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+        \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yb}}
+        \pgfpathlineto{\pgfpoint{\pgf@xc}{\pgf@yc}}
+        \pgfclosepath
+
+        \begingroup
+
+        \pgf@anchor@tff@T
+        \pgftext[left,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=\pgfshapeinnerxsep]{\raisebox{-0.75ex}{T}}
+
+        \pgf@anchor@tff@Q
+        \pgftext[right,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=-\pgfshapeinnerxsep]{\raisebox{-.75ex}{Q}}
+
+        \pgf@anchor@tff@Qn
+        \pgftext[right,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=-\pgfshapeinnerxsep]{\raisebox{-.75ex}{$\overline{\mbox{Q}}$}}
+
+        \endgroup
+      }
+    }
+    % Key to add font macros to the current font
+    \tikzset{add font/.code={\expandafter\def\expandafter\tikz@textfont
+            \expandafter{\tikz@textfont#1}}}
+
+    % Define default style for this node
+    \tikzset{flip flop/port labels/.style={font=\sffamily\scriptsize}}
+    \tikzset{every tff node/.style={draw,minimum width=1.5cm,
+            minimum height=2.25cm,inner sep=1mm,outer sep=0pt,
+            cap=round,add font=\sffamily}}
+\makeatother
+
+\makeatletter
+    \pgfdeclareshape{dff}{
+      \savedanchor\northeast{%
+        \pgfmathsetlength\pgf@x{\pgfshapeminwidth}%
+        \pgfmathsetlength\pgf@y{\pgfshapeminheight}%
+        \pgf@x=0.5\pgf@x
+        \pgf@y=0.5\pgf@y
+      }
+      % This is redundant, but makes some things easier:
+      \savedanchor\southwest{%
+        \pgfmathsetlength\pgf@x{\pgfshapeminwidth}%
+        \pgfmathsetlength\pgf@y{\pgfshapeminheight}%
+        \pgf@x=-0.5\pgf@x
+        \pgf@y=-0.5\pgf@y
+      }
+      \inheritsavedanchors[from=rectangle]
+      \inheritanchorborder[from=rectangle]
+      \anchor{center}{\pgfpointorigin}
+      \anchor{north}{\northeast \pgf@x=0pt}
+      \anchor{east}{\northeast \pgf@y=0pt}
+      \anchor{south}{\southwest \pgf@x=0pt}
+      \anchor{west}{\southwest \pgf@y=0pt}
+      \anchor{north east}{\northeast}
+      \anchor{north west}{\northeast \pgf@x=-\pgf@x}
+      \anchor{south west}{\southwest}
+      \anchor{south east}{\southwest \pgf@x=-\pgf@x}
+      \anchor{D}{
+        \pgf@process{\northeast}%
+        \pgf@x=-1\pgf@x%
+        \pgf@y=.5\pgf@y%
+      }
+      \anchor{CLK}{
+        \pgf@process{\northeast}%
+        \pgf@x=-1\pgf@x%
+        \pgf@y=-.5\pgf@y%
+      }
+      \anchor{Q}{
+        \pgf@process{\northeast}%
+        \pgf@y=.5\pgf@y%
+      }
+      \anchor{Qn}{
+        \pgf@process{\northeast}%
+        \pgf@y=-.5\pgf@y%
+      }
+
+      \backgroundpath{
+        % Rectangle box
+        \pgfpathrectanglecorners{\southwest}{\northeast}
+        % Angle (>) for clock input
+        \pgf@anchor@dff@CLK
+        \pgf@xa=\pgf@x \pgf@ya=\pgf@y
+        \pgf@xb=\pgf@x \pgf@yb=\pgf@y
+        \pgf@xc=\pgf@x \pgf@yc=\pgf@y
+        \pgfmathsetlength\pgf@x{1.6ex} % size depends on font size
+        \advance\pgf@ya by \pgf@x
+        \advance\pgf@xb by \pgf@x
+        \advance\pgf@yc by -\pgf@x
+        \pgfpathmoveto{\pgfpoint{\pgf@xa}{\pgf@ya}}
+        \pgfpathlineto{\pgfpoint{\pgf@xb}{\pgf@yb}}
+        \pgfpathlineto{\pgfpoint{\pgf@xc}{\pgf@yc}}
+        \pgfclosepath
+
+        \begingroup
+
+        \pgf@anchor@dff@D
+        \pgftext[left,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=\pgfshapeinnerxsep]{\raisebox{-0.75ex}{D}}
+
+        \pgf@anchor@dff@Q
+        \pgftext[right,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=-\pgfshapeinnerxsep]{\raisebox{-.75ex}{Q}}
+
+        \pgf@anchor@dff@Qn
+        \pgftext[right,base,at={\pgfpoint{\pgf@x}{\pgf@y}},
+          x=-\pgfshapeinnerxsep]{\raisebox{-.75ex}{$\overline{\mbox{Q}}$}}
+
+        \endgroup
+      }
+    }
+    % Key to add font macros to the current font
+    \tikzset{add font/.code={\expandafter\def\expandafter\tikz@textfont
+            \expandafter{\tikz@textfont#1}}}
+
+    % Define default style for this node
+    \tikzset{flip flop/port labels/.style={font=\sffamily\scriptsize}}
+    \tikzset{every dff node/.style={draw,minimum width=1.5cm,
+            minimum height=2.25cm,inner sep=1mm,outer sep=0pt,
+            cap=round,add font=\sffamily}}
+\makeatother
+
+\title{Digital Logic Homework 8}
+
+ECEN 2350 Spring 2017 \hfill Homework 8\\
+Samuel Cuthbertson
+
+\hrulefill{}
+\begin{enumerate}
+  \item \textit{Book Problems: 6.9, 6.11}
+  \begin{enumerate}
+    \item[6.9:] \textit{A sequential circuit has two inputs, $w_1$ and $w_2$, and an output $z$. Its function is to compare the input sequences on the two inputs. If $w_1 = w_2$ during any four consecutive clock cycles, the circuit produces $z=1$; otherwise, $z=0$. Derive a suitable circuit.}
+
+    \item[6.11:] \textit{A given FSM has an input, $w$, and an output, $z$. During four consecutive clock pulses, a sequence of four values of the $w$ signal is applied. Derive a state table for the FSM that produces $z=1$ when it detects that either the sequence $w:0010$ or $w:1110$ has been applied; otherwise, $z=0$. After the fourth clock pulse, the machince has to be again in the reset state, ready for the next sequence. Minimize the number of states needed.}
+
+  \end{enumerate}
+
+  \newpage
+  \item \textit{Book Problem: B.2}
+  \begin{enumerate}
+    \item[a:] \textit{Show that the circuit in Figure PB.2 is fuctionally equivalent to the circuit in Figure PB.1.}
+
+
+
+    \item[b:] \textit{How many transistors are needed to build this CMOS circuit? Draw the CMOS circuit.}
+  \end{enumerate}
+
+  \newpage
+  \item \textit{Book Problem: B.7}
+  \begin{enumerate}
+    \item[a:] \textit{Give the truth table for the CMOS circuit in the Figure PB.5.}
+
+    \item[b:] \textit{Derive the simplest sum-of-products expression for the truth table in (a). How many transistors are needed to build the sum-of-products circuit using the CMOS AND, OR and NOT gates?}
+
+  \end{enumerate}
+
+  \newpage
+  \item \textit{Given the following schematic from the Texas Instruments CMOS BCD to 7-segment decoder CD4511B, estimate the number of transistors this circuit needs. You cannot ignore the FlipFlops at the inputs to the circuit (the box that is labeled as a PTGN). These are toggle flip flops with preset/clear. Model these like the example from class.}
+
+  
+
+\end{enumerate}
+\end{document}

@@ -31,11 +31,7 @@ module top(ADC_CLK_10, KEY, SW, LEDR, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5);
 								  count); // Count up every slow_clk, output to count.
 
 	wire [19:0] count_binary; // Store a binary version of the BCD counter.
-	assign count_binary = count[3:0] +
-								 15'd10*count[7:4] +
-								 15'd100*count[11:8] +
-								 15'd1000*count[15:12] +
-								 15'd10000*count[19:16];
+	BCDtoD BCDconverter(count, count_binary);
 
 	wire [25:0] display;
 	BCD_decoder BCDisplay(display,
@@ -47,7 +43,7 @@ module top(ADC_CLK_10, KEY, SW, LEDR, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5);
 								 HEX5); // Display the contents of reg display
 
 	master_ctrl MasterControl(ADC_CLK_10,
-								     KEY,
+									  KEY,
 									  SW,
 									  go_buffs,
 									  rand_num,
